@@ -1,13 +1,13 @@
 ---
 name: submit
-description: Push the current branch to the user's fork and open (or refresh) the pull request against JJFromTenex/claude-code-training. Use when the user says submit, ship it, open the PR, push my PR, or invokes /submit. Never merges.
+description: Push the current branch to the user's fork and open (or refresh) the pull request against tenex-labs/anthropic-claude-code-training-public. Use when the user says submit, ship it, open the PR, push my PR, or invokes /submit. Never merges.
 ---
 
 # /submit
 
 Get this branch onto the Build Battle board: push it to the user's fork, then open a pull request into the workshop repository. One command, no permission surprises.
 
-Nobody has push access to `JJFromTenex/claude-code-training`. Everyone pushes to their own **fork** and opens the PR from there. That is the intended flow, not a workaround.
+Nobody has push access to `tenex-labs/anthropic-claude-code-training-public`. Everyone pushes to their own **fork** and opens the PR from there. That is the intended flow, not a workaround.
 
 ## 1. Preflight — stop and tell the user if any of these fail
 
@@ -19,10 +19,10 @@ Nobody has push access to `JJFromTenex/claude-code-training`. Everyone pushes to
 
 Run `git remote -v`.
 
-- If `origin` points at `JJFromTenex/claude-code-training`, the user cloned the workshop repo directly. Run:
-  `gh repo fork JJFromTenex/claude-code-training --remote=true`
+- If `origin` points at `tenex-labs/anthropic-claude-code-training-public`, the user cloned the workshop repo directly. Run:
+  `gh repo fork tenex-labs/anthropic-claude-code-training-public --remote=true`
   This creates the fork (if needed), renames the old `origin` to `upstream`, and adds the fork as `origin`. Confirm with `git remote -v`.
-- If `origin` already points at `<their-login>/claude-code-training`, nothing to do.
+- If `origin` already points at `<their-login>/anthropic-claude-code-training-public`, nothing to do.
 - Record the fork owner: `gh api user --jq .login`.
 
 ## 3. Push
@@ -34,13 +34,13 @@ If the pre-push hook refuses (red tests, failed check), **stop and show the user
 ## 4. Open the pull request — or refresh it
 
 Check for an existing PR from this branch:
-`gh pr list --repo JJFromTenex/claude-code-training --head <login>:<branch> --state open --json number,url`
+`gh pr list --repo tenex-labs/anthropic-claude-code-training-public --head <login>:<branch> --state open --json number,url`
 
 - **PR exists:** the push already updated it and the grader re-scores on every push. Print the PR URL and stop.
 - **No PR yet:** build the description, then create it.
   - Title: `<TICKET-ID>: <what it does>` — take the ticket id from the branch name (`NWP-201-issue-cards` → `NWP-201`) and the summary from the ticket title in `docs/tickets/`.
   - Body: if a `northwind-pr` skill exists in `.claude/skills/`, follow it to write the description. Otherwise follow `/pr`. Write the body to a temp file.
-  - `gh pr create --repo JJFromTenex/claude-code-training --base main --head <login>:<branch> --title "<title>" --body-file <file>`
+  - `gh pr create --repo tenex-labs/anthropic-claude-code-training-public --base main --head <login>:<branch> --title "<title>" --body-file <file>`
 
 ## 5. Report
 

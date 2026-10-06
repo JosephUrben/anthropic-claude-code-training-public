@@ -27,8 +27,8 @@ Every merchant, cardholder, and amount in this repository is generated. Northwin
 ## Quick Start
 
 ```bash
-git clone https://github.com/JJFromTenex/claude-code-training.git
-cd claude-code-training/build-battle/merchant-console
+git clone https://github.com/tenex-labs/anthropic-claude-code-training-public.git
+cd anthropic-claude-code-training-public/build-battle/merchant-console
 npm install
 npm run dev
 ```
