@@ -10,13 +10,31 @@ import {
 } from "@/components/Table"
 import { StatusBadge } from "@/components/ui/payments/StatusBadge"
 import { merchantById, merchants } from "@/data/merchants"
-import { queryPayments } from "@/data/queries"
+import { filterPayments, parseFilters, queryPayments } from "@/data/queries"
 import { PaymentFilters, PaymentStatus } from "@/data/types"
+import {
+  DEFAULT_EXPORT_COLUMNS,
+  EXPORT_COLUMNS,
+  ExportColumn,
+} from "@/lib/csv"
 import { formatDate } from "@/lib/dates"
 import { formatMoney } from "@/lib/money"
-import { Download } from "lucide-react"
 import Link from "next/link"
+import { ExportDialog } from "./export-dialog"
 import { PaymentsFilterBar } from "./filter-bar"
+
+const EXPORT_COLUMN_LABELS: Record<ExportColumn, string> = {
+  id: "Payment ID",
+  created_at: "Created (UTC)",
+  merchant: "Merchant",
+  description: "Description",
+  status: "Status",
+  method: "Method",
+  card_brand: "Card brand",
+  last4: "Card last four",
+  amount: "Amount",
+  currency: "Currency",
+}
 
 const STATUSES: (PaymentStatus | "all")[] = [
   "all",
@@ -47,6 +65,13 @@ export default async function PaymentsPage({
     Object.entries(params).filter(([, v]) => Boolean(v)) as [string, string][],
   )
 
+  // Counted the way the export route selects rows, so the number shown is
+  // the number of rows in the file.
+  const exportCounts = {
+    filter: filterPayments(parseFilters(query)).length,
+    all: filterPayments({}).length,
+  }
+
   const pageHref = (next: number) => {
     const q = new URLSearchParams(query)
     q.set("page", String(next))
@@ -65,15 +90,15 @@ export default async function PaymentsPage({
             search: filters.search ?? "",
           }}
         />
-        <Button variant="secondary" className="w-full gap-2 py-1.5 sm:w-fit" asChild>
-          <a href={`/api/payments/export?${query.toString()}`}>
-            <Download
-              className="-ml-0.5 size-4 shrink-0 text-gray-400 dark:text-gray-600"
-              aria-hidden="true"
-            />
-            Export
-          </a>
-        </Button>
+        <ExportDialog
+          query={query.toString()}
+          counts={exportCounts}
+          columns={EXPORT_COLUMNS.map((id) => ({
+            id,
+            label: EXPORT_COLUMN_LABELS[id],
+          }))}
+          defaultColumns={DEFAULT_EXPORT_COLUMNS}
+        />
       </div>
 
       <TableRoot className="border-t border-gray-200 dark:border-gray-800">
